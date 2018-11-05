@@ -1,5 +1,6 @@
 from contextlib import contextmanager
-from jnius import autoclass, JavaMultipleMethod
+from jnius import autoclass, cast
+from tempfile import mkdtemp
 
 
 __MediaDriver = autoclass('io.aeron.driver.MediaDriver')
@@ -7,6 +8,7 @@ __MediaDriver.__str__ = lambda self: self.toString()
 
 __System = autoclass('java.lang.System')
 __Context = autoclass('io.aeron.driver.MediaDriver$Context')
+__CommonContext = autoclass('io.aeron.CommonContext')
 
 
 @contextmanager
@@ -38,7 +40,10 @@ def launch(**kwargs):
     - 'ipc_mtu_length'
     :return: Launched media driver instance.
     """
-    context = create_context(**kwargs)
+    context, kwargs = create_context(**kwargs)
+    if kwargs:
+        raise KeyError(f'unknown parameters - {kwargs.keys()}')
+
     driver = __MediaDriver.launch(context)
     try:
         yield driver
@@ -47,13 +52,11 @@ def launch(**kwargs):
 
 
 @contextmanager
-def launch_embedded():
+def launch_embedded(**kwargs):
     """
     Launch an isolated MediaDriver embedded in the current process with a provided configuration ctx and a generated
-     * aeronDirectoryName (overwrites configured {@link Context#aeronDirectoryName()}) that can be retrieved by calling
-     * aeronDirectoryName.
+    **aeron_directory_name** that can be retrieved by calling `aeronDirectoryName`.
     :parameters:
-    - 'aeron_directory_name':
     - 'driver_timeout_ms':
     - 'use_windows_high_res_timer':
     - 'warn_if_directory_exists':
@@ -77,7 +80,12 @@ def launch_embedded():
     - 'ipc_mtu_length'
     :return: Launched embedded media driver instance.
     """
-    driver = __MediaDriver.launchEmbedded()
+    kwargs['aeron_directory_name'] = mkdtemp('aeron_driver')
+    context, kwargs = create_context(**kwargs)
+    if kwargs:
+        raise KeyError(f'unknown parameters - {kwargs.keys()}')
+
+    driver = __MediaDriver.launchEmbedded(context)
     try:
         yield driver
     finally:
@@ -110,6 +118,7 @@ def create_context(**kwargs):
     - 'initial_window_length'
     - 'mtu_length'
     - 'ipc_mtu_length'
+    :return: Newly created context and unattended parameters
     """
     # nasty hack caused by limitation of python-java bridge
     aeron_directory_name = kwargs.pop('aeron_directory_name', None)
@@ -202,4 +211,14 @@ def create_context(**kwargs):
     if ipc_mtu_length:
         context.ipcMtuLength(ipc_mtu_length)
 
-    return context
+    return context, kwargs
+
+
+def is_active(aeron_directory_name=None):
+    context, _ = create_context(aeron_directory_name=aeron_directory_name)
+    context.conclude()
+
+    directory = context.aeronDirectory()
+    driver_timeout_ms = context.driverTimeoutMs()
+    consumer = cast('java.util.function.Consumer<S>', None)
+    return __CommonContext.isDriverActive(directory, driver_timeout_ms, consumer)
