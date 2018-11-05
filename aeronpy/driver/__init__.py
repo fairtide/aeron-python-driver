@@ -12,6 +12,17 @@ if 'JAVA_HOME' not in os.environ:
             os.environ.setdefault('JAVA_HOME', java_home)
         else:
             raise RuntimeError(f'/usr/libexec/java_home failed with - {java_home}')
+    elif sys.platform == 'linux':
+        java_home = subprocess.check_output([
+            'jrunscript',
+            '-e',
+            'java.lang.System.out.println(java.lang.System.getProperty(\'java.home\'));'])
+        if java_home:
+            java_home = java_home.decode('ascii').rstrip()
+            os.environ.setdefault('JAVA_HOME', java_home)
+        else:
+            raise RuntimeError(f'jrunscript failed with - {java_home}')
+
     else:
         raise NotImplemented('Not supported on this platform')
 
