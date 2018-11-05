@@ -1,3 +1,6 @@
+[![image](https://img.shields.io/pypi/v/aeron-python-driver.svg)](https://pypi.org/project/aeron-python-driver/)
+[![image](https://img.shields.io/pypi/l/aeron-python-driver.svg)](https://pypi.org/project/aeron-python-driver/)
+
 ### Introduction
 
 This repository provides unofficial Python wrapper for [Aeron Media Driver](https://github.com/real-logic/aeron) simplifying process of integration of media driver into python.
