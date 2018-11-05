@@ -24,8 +24,8 @@ from setuptools import setup
 # 'Development Status :: 5 - Production/Stable'
 release_status = 'Development Status :: 3 - Alpha'
 dependencies = [
+    'Cython',
     'pyjnius==1.1.3',
-    'Cython==0.29',
 ]
 
 here, _ = os.path.split(__file__)
@@ -60,7 +60,9 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Operating System :: OS Independent',
-        'Topic :: Internet',
+        'Topic :: Aeron',
+        'Topic :: Fairtide',
+        'Topic :: Messaging',
     ],
     platforms='Posix; MacOS X; Windows',
     packages=['aeronpy.driver'],
