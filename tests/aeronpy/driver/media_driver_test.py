@@ -94,7 +94,3 @@ def test_create_context__unattended_args():
     _, unattended_args = media_driver.create_context(unknown_arg='abc')
     assert_that(unattended_args, is_not(empty()))
     assert_that(unattended_args, has_key('unknown_arg'))
-
-
-def test_is_active__no_driver(custom_aeron_dir):
-    assert_that(media_driver.is_active(custom_aeron_dir), is_(False))

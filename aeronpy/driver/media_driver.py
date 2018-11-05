@@ -8,7 +8,6 @@ __MediaDriver.__str__ = lambda self: self.toString()
 
 __System = autoclass('java.lang.System')
 __Context = autoclass('io.aeron.driver.MediaDriver$Context')
-__CommonContext = autoclass('io.aeron.CommonContext')
 
 
 @contextmanager
@@ -212,13 +211,3 @@ def create_context(**kwargs):
         context.ipcMtuLength(ipc_mtu_length)
 
     return context, kwargs
-
-
-def is_active(aeron_directory_name=None):
-    context, _ = create_context(aeron_directory_name=aeron_directory_name)
-    context.conclude()
-
-    directory = context.aeronDirectory()
-    driver_timeout_ms = context.driverTimeoutMs()
-    consumer = cast('java.util.function.Consumer<S>', None)
-    return __CommonContext.isDriverActive(directory, driver_timeout_ms, consumer)
