@@ -1,6 +1,6 @@
 from aeronpy.driver import archiving_media_driver
 from hamcrest import *
-from pytest import fixture
+from pytest import fixture, mark
 from tempfile import mkdtemp
 
 
@@ -9,6 +9,7 @@ def custom_aeron_dir():
     return mkdtemp(prefix='aeron_driver')
 
 
+@mark.skip(reason="disabled temporarily")
 def test_launch__default():
     with archiving_media_driver.launch() as driver:
         assert_that(driver, is_not(None))
