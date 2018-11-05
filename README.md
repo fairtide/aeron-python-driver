@@ -9,7 +9,7 @@ This repository provides unofficial Python wrapper for [Aeron Media Driver](http
 
 For installation with pip:
 ```
-$ python3.6 -m pip install aeron-python-driver
+$ pip install aeron-python-driver
 ```
 
 To manage Aeron media driver through Python resource manager:
