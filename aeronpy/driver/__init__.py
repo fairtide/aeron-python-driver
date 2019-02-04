@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 
-__version__ = '1.11.2'
+__version__ = '1.15.1'
 
 if 'JAVA_HOME' not in os.environ:
     if sys.platform == 'darwin':
